@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Check Application Status</title>
+    <link href="bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-light bg-primary">
+        <div class="container justify-content-center">
+            <a href="login.html">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/FIS_logo.svg" alt="Logo" height="50">
+            </a>
+        </div>
+    </nav>
+    <div class="container text-center mt-5">
+        <h3>Application Status</h3>
+        <p id="statusMessage"></p>
+    </div>
+    <footer class="footer mt-auto py-3 bg-primary text-center">
+        <span class="text-light">© 2025 FIS. All rights reserved.</span>
+    </footer>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const appId = urlParams.get('app_id');
+        const statusEl = document.getElementById("statusMessage");
+        if (appId) {
+            statusEl.innerHTML = `Your application status for Application Number <strong>${appId}</strong> is currently: <strong>Processing</strong>`;
+        } else {
+            statusEl.innerText = "Application ID not found.";
+        }
+    </script>
+</body>
+
+</html>

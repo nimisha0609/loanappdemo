@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Loan Application</title>
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-light bg-primary">
+        <div class="container justify-content-center">
+            <a href="login.html">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/FIS_logo.svg" alt="Logo" height="50">
+            </a>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <form id="loanForm">
+            <div id="step1">
+                <h4>Personal Details</h4>
+                <div class="mb-3"><label>Full Name</label><input type="text" class="form-control" placeholder="John Doe"
+                        required></div>
+                <div class="mb-3"><label>Date of Birth</label>
+                    <input type="date" placeholder="DD-MM-YYYY" class="form-control" id="dob" required>
+                    <div class="invalid-feedback">You must be at least 18 years old.</div>
+                </div>
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input type="email" class="form-control" placeholder="name@example.com" required>
+                </div>
+
+                <div class="mb-3">
+                    <label>Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" placeholder="10 digit Mobile Number" required>
+                    <div class="invalid-feedback">Must enter a valid 10 Digit Mobile number</div>
+                </div>
+                <div class="mb-3"><label>Aadhar Number</label>
+                    <input class="form-control" type="tel" id="aadhar" name="aadhar" placeholder="XXXX-XXXX-XXXX"
+                        pattern="[0-9]{4}-[0-9]{4}-[0-9]{4}" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="nextStep(1)">Next</button>
+            </div>
+            <div id="step2" style="display:none;">
+                <h4>Employment Details</h4>
+                <select id="employmentStatus" class="form-select mb-4" onchange="toggleEmploymentDetails()" required>
+                    <option value="">Select</option>
+                    <option value="Salaried">Salaried</option>
+                    <option value="Self-Employed">Self-Employed</option>
+                    <option value="Unemployed">Unemployed</option>
+                </select>
+                <div id="employmentDetails" style="display:none;">
+                    <div class="mb-3">
+                        <label>Employer Name</label>
+                        <input type="text" class="form-control" placeholder="If Self-Employed, mention Self" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Job Title</label>
+                        <input type="text" class="form-control" placeholder="If Self-Employed, mention NA" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Annual Income</label>
+                        <input type="number" class="form-control" required>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Previous</button>
+                <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next</button>
+            </div>
+            <div id="step3" style="display:none;">
+                <h4>Loan Details</h4>
+                <div class="mb-3"><label>Loan Amount</label><input type="number" min="100000" max="1000000"
+                        class="form-control" placeholder="Actual Amount Needed" required></div>
+                <div class="mb-3"><label>Purpose of Loan</label><input type="text"
+                        placeholder="Home Loan, Car Loan, etc" class="form-control" required></div>
+                <div class="mb-3"><label>Loan Term (Years)</label><input type="number" min="1" max="30"
+                        class="form-control" required>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Previous</button>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </form>
+    </div>
+    <footer class="footer mt-auto py-3 bg-primary text-center">
+        <span class="text-light">© 2025 FIS. All rights reserved.</span>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
