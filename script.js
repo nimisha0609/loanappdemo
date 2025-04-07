@@ -50,7 +50,9 @@ window.onload = function () {
   if (appNumEl && appId) {
     appNumEl.innerText = appId;
     new QRCode(document.getElementById("qrcode"), {
-      text: "https://nimmymnj.com/check-status.html?app_id=" + appId,
+      text:
+        "https://nimisha0609.github.io/loanappdemo/check-status.html?app_id=" +
+        appId,
       width: 192,
       height: 192,
     });
@@ -90,16 +92,17 @@ function validatePhone() {
 function toggleEmploymentDetails() {
   const status = document.getElementById("employmentStatus").value;
   const detailsSection = document.getElementById("employmentDetails");
+  const inputs = detailsSection.querySelectorAll("input");
 
   if (status === "Salaried" || status === "Self-Employed") {
     detailsSection.style.display = "block";
+    inputs.forEach((input) => input.setAttribute("required", "true"));
   } else {
     detailsSection.style.display = "none";
-    // Clear and un-validate fields when hidden
-    const inputs = detailsSection.querySelectorAll("input");
     inputs.forEach((input) => {
-      input.value = "";
-      input.classList.remove("is-valid", "is-invalid");
+      input.removeAttribute("required");
+      input.classList.remove("is-invalid", "is-valid");
+      input.value = ""; // Optionally clear data
     });
   }
 }
