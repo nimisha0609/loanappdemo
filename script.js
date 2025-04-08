@@ -110,7 +110,10 @@ function toggleEmploymentDetails() {
 function resetPassword(event) {
   event.preventDefault();
   const useremail = document.getElementById("useremail").value;
-  if (useremail) {
+  if (!useremail) {
+    document.getElementById("useremail").classList.add("is-invalid");
+  } else {
+    document.getElementById("useremail").classList.remove("is-invalid");
     document.getElementById("resetMsg").style.display = "block";
   }
 }
