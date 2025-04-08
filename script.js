@@ -106,3 +106,11 @@ function toggleEmploymentDetails() {
     });
   }
 }
+
+function resetPassword(event) {
+  event.preventDefault();
+  const useremail = document.getElementById("useremail").value;
+  if (useremail) {
+    document.getElementById("resetMsg").style.display = "block";
+  }
+}
