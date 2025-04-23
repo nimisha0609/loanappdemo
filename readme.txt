@@ -39,9 +39,20 @@ const Identification = () => {
     setIsEditingName(!isEditingName);
   };
 
-  const handleEdit = (item) => {
-    setEditId(item.identType);
-    setEditData({ ...item });
+  const handleEditToggle = (item) => {
+    if (editId === item.identType) {
+      const updated = customerResult.identification.map((i) =>
+        i.identType === editId ? { ...i, ...editData } : i
+      );
+      setCustomerResult({
+        ...customerResult,
+        party: { ...customerResult.party, identification: updated },
+      });
+      setEditId(null);
+    } else {
+      setEditId(item.identType);
+      setEditData({ ...item });
+    }
   };
 
   const handleDelete = (id) => {
@@ -57,17 +68,6 @@ const Identification = () => {
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleEditSave = () => {
-    const updated = customerResult.identification.map((i) =>
-      i.identType === editId ? { ...i, ...editData } : i
-    );
-    setCustomerResult({
-      ...customerResult,
-      party: { ...customerResult.party, identification: updated },
-    });
-    setEditId(null);
   };
 
   return (
@@ -126,10 +126,6 @@ const Identification = () => {
                   <input name="issuedLoc" value={editData.issuedLoc} onChange={handleEditChange} className="border px-2 py-1 rounded" />
                   <input name="issueDt" value={editData.issueDt} onChange={handleEditChange} className="border px-2 py-1 rounded" />
                   <input name="expDt" value={editData.expDt} onChange={handleEditChange} className="border px-2 py-1 rounded" />
-                  <div className="col-span-2 flex gap-3 mt-2">
-                    <button className="bg-blue-600 text-white px-4 py-1 rounded" onClick={handleEditSave}>Save</button>
-                    <button className="text-red-600" onClick={() => setEditId(null)}>Cancel</button>
-                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4">
@@ -139,14 +135,24 @@ const Identification = () => {
                   <p><strong>Expiration Date:</strong> {item.expDt}</p>
                   <p><strong>Issuing Entity:</strong> {item.issuedLoc}</p>
                   <p><strong>Issuing Location:</strong> {item.issuedLoc}</p>
-                  <div className="col-span-2 flex justify-end gap-4">
-                    <a href="#" className="flex items-center text-blue-600 hover:underline" onClick={() => handleEdit(item)}>
-                      <Pencil size={16} className="mr-1" /> Edit
-                    </a>
-                    <a href="#" className="text-red-600 hover:underline" onClick={() => handleDelete(item.identType)}>Delete</a>
-                  </div>
                 </div>
               )}
+              <div className="flex justify-end gap-4 mt-2">
+                <a
+                  href="#"
+                  className="flex items-center text-blue-600 hover:underline"
+                  onClick={() => handleEditToggle(item)}
+                >
+                  <Pencil size={16} className="mr-1" /> {editId === item.identType ? "Save" : "Edit"}
+                </a>
+                <a
+                  href="#"
+                  className="text-red-600 hover:underline"
+                  onClick={() => handleDelete(item.identType)}
+                >
+                  Delete
+                </a>
+              </div>
             </div>
           ))
         ) : (
