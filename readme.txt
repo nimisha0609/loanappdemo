@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCustomerContext } from "@/app/banker/context/CustomerContext";
+import { Pencil } from "lucide-react";
 
 const Identification = () => {
   const { customerResult, setCustomerResult } = useCustomerContext();
@@ -24,16 +25,18 @@ const Identification = () => {
     setNameData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleNameSave = () => {
-    setCustomerResult({
-      ...customerResult,
-      personParty: {
-        ...customerResult.personParty,
-        firstName: nameData.firstName,
-        lastName: nameData.lastName,
-      },
-    });
-    setIsEditingName(false);
+  const handleNameEditToggle = () => {
+    if (isEditingName) {
+      setCustomerResult({
+        ...customerResult,
+        personParty: {
+          ...customerResult.personParty,
+          firstName: nameData.firstName,
+          lastName: nameData.lastName,
+        },
+      });
+    }
+    setIsEditingName(!isEditingName);
   };
 
   const handleEdit = (item) => {
@@ -68,19 +71,18 @@ const Identification = () => {
   };
 
   return (
-    <div className="space-y-6 text-gray-800 text-sm">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800 text-sm">
       {/* Overview Section */}
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold text-lg">Overview</h3>
-          {!isEditingName && (
-            <button
-              className="text-blue-600 hover:underline"
-              onClick={() => setIsEditingName(true)}
-            >
-              Edit
-            </button>
-          )}
+          <a
+            href="#"
+            className="text-blue-600 hover:underline flex items-center"
+            onClick={handleNameEditToggle}
+          >
+            <Pencil size={16} className="mr-1" /> {isEditingName ? "Save" : "Edit"}
+          </a>
         </div>
 
         {!isEditingName ? (
@@ -105,10 +107,6 @@ const Identification = () => {
               placeholder="Last Name"
               className="border border-gray-300 px-3 py-2 rounded w-full"
             />
-            <div className="flex gap-2 mt-2">
-              <button className="bg-blue-600 text-white px-4 py-1 rounded" onClick={handleNameSave}>Save</button>
-              <button className="text-red-600" onClick={() => setIsEditingName(false)}>Cancel</button>
-            </div>
           </div>
         )}
       </div>
@@ -142,8 +140,10 @@ const Identification = () => {
                   <p><strong>Issuing Entity:</strong> {item.issuedLoc}</p>
                   <p><strong>Issuing Location:</strong> {item.issuedLoc}</p>
                   <div className="col-span-2 flex justify-end gap-4">
-                    <button className="text-blue-600 hover:underline" onClick={() => handleEdit(item)}>Edit</button>
-                    <button className="text-red-600 hover:underline" onClick={() => handleDelete(item.identType)}>Delete</button>
+                    <a href="#" className="flex items-center text-blue-600 hover:underline" onClick={() => handleEdit(item)}>
+                      <Pencil size={16} className="mr-1" /> Edit
+                    </a>
+                    <a href="#" className="text-red-600 hover:underline" onClick={() => handleDelete(item.identType)}>Delete</a>
                   </div>
                 </div>
               )}
