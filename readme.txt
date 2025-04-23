@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { useCustomerContext } from "@/app/banker/context/CustomerContext";
 
+interface IdentificationItem {
+  identType: string;
+  identValue: string;
+  taxIdInd: boolean;
+  issuedLoc: string;
+  issueDt: string;
+  expDt: string;
+}
+
 const Identification = () => {
   const { customerResult, setCustomerResult } = useCustomerContext();
   const [isEditingName, setIsEditingName] = useState(false);
@@ -10,7 +19,7 @@ const Identification = () => {
   });
 
   const [editId, setEditId] = useState<string | null>(null);
-  const [editData, setEditData] = useState({
+  const [editData, setEditData] = useState<IdentificationItem>({
     identType: "",
     identValue: "",
     taxIdInd: false,
@@ -19,7 +28,7 @@ const Identification = () => {
     expDt: "",
   });
 
-  const handleNameChange = (e) => {
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNameData((prev) => ({ ...prev, [name]: value }));
   };
@@ -39,10 +48,10 @@ const Identification = () => {
     setIsEditingName(!isEditingName);
   };
 
-  const handleEditToggle = (item) => {
+  const handleEditToggle = (item: IdentificationItem) => {
     if (editId === item.identType) {
       dummySave("Identification", editData);
-      const updated = customerResult.identification.map((i) =>
+      const updated = customerResult.identification.map((i: IdentificationItem) =>
         i.identType === editId ? { ...i, ...editData } : i
       );
       setCustomerResult({
@@ -56,10 +65,10 @@ const Identification = () => {
     }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: string) => {
     dummyDelete(id);
     const updated = customerResult.identification.filter(
-      (i) => i.identType !== id
+      (i: IdentificationItem) => i.identType !== id
     );
     setCustomerResult({
       ...customerResult,
@@ -67,19 +76,17 @@ const Identification = () => {
     });
   };
 
-  const handleEditChange = (e) => {
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const dummySave = (section, data) => {
+  const dummySave = (section: string, data: any) => {
     console.log(`Saving ${section}`, data);
-    // Call your API here
   };
 
-  const dummyDelete = (id) => {
+  const dummyDelete = (id: string) => {
     console.log(`Deleting record with id: ${id}`);
-    // Call your API here
   };
 
   return (
@@ -91,11 +98,11 @@ const Identification = () => {
           <div className="flex gap-4">
             {isEditingName ? (
               <>
-                <button onClick={handleNameEditToggle} className="text-blue-600 hover:underline">Save</button>
-                <button onClick={() => setIsEditingName(false)} className="text-gray-600 hover:underline">Cancel</button>
+                <div className="inline-flex items-center justify-center bg-blue-600 text-white px-3 py-1 rounded text-sm cursor-pointer" onClick={handleNameEditToggle}>Save</div>
+                <div className="inline-flex items-center justify-center bg-gray-300 text-gray-800 px-3 py-1 rounded text-sm cursor-pointer" onClick={() => setIsEditingName(false)}>Cancel</div>
               </>
             ) : (
-              <button onClick={handleNameEditToggle} className="text-blue-600 hover:underline">Edit</button>
+              <div className="inline-flex items-center justify-center bg-blue-600 text-white px-3 py-1 rounded text-sm cursor-pointer" onClick={handleNameEditToggle}>Edit</div>
             )}
           </div>
         </div>
@@ -113,7 +120,7 @@ const Identification = () => {
           <h3 className="font-semibold text-lg">Documentary</h3>
         </div>
         {customerResult?.identification?.length > 0 ? (
-          customerResult.identification.map((item) => (
+          customerResult.identification.map((item: IdentificationItem) => (
             <div key={item.identType} className="border-b border-gray-200 pb-4 mb-4">
               <div className="grid grid-cols-2 gap-4">
                 <p><strong>ID Type:</strong> {editId === item.identType ? <input name="identType" value={editData.identType} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" /> : item.identType}</p>
@@ -126,13 +133,13 @@ const Identification = () => {
               <div className="flex justify-end gap-4 mt-2">
                 {editId === item.identType ? (
                   <>
-                    <button onClick={() => handleEditToggle(item)} className="text-blue-600 hover:underline">Save</button>
-                    <button onClick={() => setEditId(null)} className="text-gray-600 hover:underline">Cancel</button>
+                    <div className="inline-flex items-center justify-center bg-blue-600 text-white px-3 py-1 rounded text-sm cursor-pointer" onClick={() => handleEditToggle(item)}>Save</div>
+                    <div className="inline-flex items-center justify-center bg-gray-300 text-gray-800 px-3 py-1 rounded text-sm cursor-pointer" onClick={() => setEditId(null)}>Cancel</div>
                   </>
                 ) : (
-                  <button onClick={() => handleEditToggle(item)} className="text-blue-600 hover:underline">Edit</button>
+                  <div className="inline-flex items-center justify-center bg-blue-600 text-white px-3 py-1 rounded text-sm cursor-pointer" onClick={() => handleEditToggle(item)}>Edit</div>
                 )}
-                <button onClick={() => handleDelete(item.identType)} className="text-red-600 hover:underline">Delete</button>
+                <div className="inline-flex items-center justify-center bg-red-600 text-white px-3 py-1 rounded text-sm cursor-pointer" onClick={() => handleDelete(item.identType)}>Delete</div>
               </div>
             </div>
           ))
