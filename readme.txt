@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useCustomerContext } from "@/app/banker/context/CustomerContext";
-import { Pencil } from "lucide-react";
 
 const Identification = () => {
   const { customerResult, setCustomerResult } = useCustomerContext();
@@ -27,6 +26,7 @@ const Identification = () => {
 
   const handleNameEditToggle = () => {
     if (isEditingName) {
+      dummySave("Overview", nameData);
       setCustomerResult({
         ...customerResult,
         personParty: {
@@ -41,6 +41,7 @@ const Identification = () => {
 
   const handleEditToggle = (item) => {
     if (editId === item.identType) {
+      dummySave("Identification", editData);
       const updated = customerResult.identification.map((i) =>
         i.identType === editId ? { ...i, ...editData } : i
       );
@@ -56,6 +57,7 @@ const Identification = () => {
   };
 
   const handleDelete = (id) => {
+    dummyDelete(id);
     const updated = customerResult.identification.filter(
       (i) => i.identType !== id
     );
@@ -70,6 +72,16 @@ const Identification = () => {
     setEditData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const dummySave = (section, data) => {
+    console.log(`Saving ${section}`, data);
+    // Call your API here
+  };
+
+  const dummyDelete = (id) => {
+    console.log(`Deleting record with id: ${id}`);
+    // Call your API here
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800 text-sm">
       {/* Overview Section */}
@@ -78,37 +90,18 @@ const Identification = () => {
           <h3 className="font-semibold text-lg">Overview</h3>
           <a
             href="#"
-            className="text-blue-600 hover:underline flex items-center"
+            className="text-blue-600 hover:underline"
             onClick={handleNameEditToggle}
           >
-            <Pencil size={16} className="mr-1" /> {isEditingName ? "Save" : "Edit"}
+            {isEditingName ? "Save" : "Edit"}
           </a>
         </div>
 
-        {!isEditingName ? (
-          <div className="grid grid-cols-2 gap-4">
-            <p><strong>Mothers Maiden Name:</strong> {customerResult?.personParty?.firstName || "-"}</p>
-            <p><strong>Password:</strong> {customerResult?.personParty?.lastName || "-"}</p>
-            <p><strong>Password Clue:</strong> -</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            <input
-              name="firstName"
-              value={nameData.firstName}
-              onChange={handleNameChange}
-              placeholder="First Name"
-              className="border border-gray-300 px-3 py-2 rounded w-full"
-            />
-            <input
-              name="lastName"
-              value={nameData.lastName}
-              onChange={handleNameChange}
-              placeholder="Last Name"
-              className="border border-gray-300 px-3 py-2 rounded w-full"
-            />
-          </div>
-        )}
+        <div className="grid grid-cols-2 gap-4">
+          <p><strong>Mothers Maiden Name:</strong> {isEditingName ? <input name="firstName" value={nameData.firstName} onChange={handleNameChange} className="border px-2 py-1 rounded w-full" /> : customerResult?.personParty?.firstName || "-"}</p>
+          <p><strong>Password:</strong> {isEditingName ? <input name="lastName" value={nameData.lastName} onChange={handleNameChange} className="border px-2 py-1 rounded w-full" /> : customerResult?.personParty?.lastName || "-"}</p>
+          <p><strong>Password Clue:</strong> -</p>
+        </div>
       </div>
 
       {/* Documentary Section */}
@@ -119,31 +112,21 @@ const Identification = () => {
         {customerResult?.identification?.length > 0 ? (
           customerResult.identification.map((item) => (
             <div key={item.identType} className="border-b border-gray-200 pb-4 mb-4">
-              {editId === item.identType ? (
-                <div className="grid grid-cols-2 gap-4">
-                  <input name="identType" value={editData.identType} onChange={handleEditChange} className="border px-2 py-1 rounded" />
-                  <input name="identValue" value={editData.identValue} onChange={handleEditChange} className="border px-2 py-1 rounded" />
-                  <input name="issuedLoc" value={editData.issuedLoc} onChange={handleEditChange} className="border px-2 py-1 rounded" />
-                  <input name="issueDt" value={editData.issueDt} onChange={handleEditChange} className="border px-2 py-1 rounded" />
-                  <input name="expDt" value={editData.expDt} onChange={handleEditChange} className="border px-2 py-1 rounded" />
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-4">
-                  <p><strong>ID Type:</strong> {item.identType}</p>
-                  <p><strong>ID Number:</strong> {item.identValue}</p>
-                  <p><strong>Issued Date:</strong> {item.issueDt}</p>
-                  <p><strong>Expiration Date:</strong> {item.expDt}</p>
-                  <p><strong>Issuing Entity:</strong> {item.issuedLoc}</p>
-                  <p><strong>Issuing Location:</strong> {item.issuedLoc}</p>
-                </div>
-              )}
+              <div className="grid grid-cols-2 gap-4">
+                <p><strong>ID Type:</strong> {editId === item.identType ? <input name="identType" value={editData.identType} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" /> : item.identType}</p>
+                <p><strong>ID Number:</strong> {editId === item.identType ? <input name="identValue" value={editData.identValue} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" /> : item.identValue}</p>
+                <p><strong>Issued Date:</strong> {editId === item.identType ? <input name="issueDt" value={editData.issueDt} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" /> : item.issueDt}</p>
+                <p><strong>Expiration Date:</strong> {editId === item.identType ? <input name="expDt" value={editData.expDt} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" /> : item.expDt}</p>
+                <p><strong>Issuing Entity:</strong> {editId === item.identType ? <input name="issuedLoc" value={editData.issuedLoc} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" /> : item.issuedLoc}</p>
+                <p><strong>Issuing Location:</strong> {editId === item.identType ? <input name="issuedLoc" value={editData.issuedLoc} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" /> : item.issuedLoc}</p>
+              </div>
               <div className="flex justify-end gap-4 mt-2">
                 <a
                   href="#"
-                  className="flex items-center text-blue-600 hover:underline"
+                  className="text-blue-600 hover:underline"
                   onClick={() => handleEditToggle(item)}
                 >
-                  <Pencil size={16} className="mr-1" /> {editId === item.identType ? "Save" : "Edit"}
+                  {editId === item.identType ? "Save" : "Edit"}
                 </a>
                 <a
                   href="#"
