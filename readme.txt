@@ -88,13 +88,16 @@ const Identification = () => {
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold text-lg">Overview</h3>
-          <a
-            href="#"
-            className="text-blue-600 hover:underline"
-            onClick={handleNameEditToggle}
-          >
-            {isEditingName ? "Save" : "Edit"}
-          </a>
+          <div className="flex gap-4">
+            {isEditingName ? (
+              <>
+                <button onClick={handleNameEditToggle} className="text-blue-600 hover:underline">Save</button>
+                <button onClick={() => setIsEditingName(false)} className="text-gray-600 hover:underline">Cancel</button>
+              </>
+            ) : (
+              <button onClick={handleNameEditToggle} className="text-blue-600 hover:underline">Edit</button>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -121,20 +124,15 @@ const Identification = () => {
                 <p><strong>Issuing Location:</strong> {editId === item.identType ? <input name="issuedLoc" value={editData.issuedLoc} onChange={handleEditChange} className="border px-2 py-1 rounded w-full" /> : item.issuedLoc}</p>
               </div>
               <div className="flex justify-end gap-4 mt-2">
-                <a
-                  href="#"
-                  className="text-blue-600 hover:underline"
-                  onClick={() => handleEditToggle(item)}
-                >
-                  {editId === item.identType ? "Save" : "Edit"}
-                </a>
-                <a
-                  href="#"
-                  className="text-red-600 hover:underline"
-                  onClick={() => handleDelete(item.identType)}
-                >
-                  Delete
-                </a>
+                {editId === item.identType ? (
+                  <>
+                    <button onClick={() => handleEditToggle(item)} className="text-blue-600 hover:underline">Save</button>
+                    <button onClick={() => setEditId(null)} className="text-gray-600 hover:underline">Cancel</button>
+                  </>
+                ) : (
+                  <button onClick={() => handleEditToggle(item)} className="text-blue-600 hover:underline">Edit</button>
+                )}
+                <button onClick={() => handleDelete(item.identType)} className="text-red-600 hover:underline">Delete</button>
               </div>
             </div>
           ))
