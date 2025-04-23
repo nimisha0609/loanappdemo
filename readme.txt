@@ -3,7 +3,6 @@ import { useCustomerContext } from "@/app/banker/context/CustomerContext";
 
 const Identification = () => {
   const { customerResult, setCustomerResult } = useCustomerContext();
-
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameData, setNameData] = useState({
     firstName: customerResult?.personParty?.firstName || "",
@@ -39,14 +38,7 @@ const Identification = () => {
 
   const handleEdit = (item) => {
     setEditId(item.identType);
-    setEditData({
-      identType: item.identType,
-      identValue: item.identValue,
-      taxIdInd: item.taxIdInd,
-      issuedLoc: item.issuedLoc,
-      issueDt: item.issueDt,
-      expDt: item.expDt,
-    });
+    setEditData({ ...item });
   };
 
   const handleDelete = (id) => {
@@ -76,15 +68,15 @@ const Identification = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 text-gray-800 text-sm">
       {/* Overview Section */}
-      <div className="bg-gray-50 border border-gray-300 rounded-lg p-6 shadow-sm">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Overview</h2>
+          <h3 className="font-semibold text-lg">Overview</h3>
           {!isEditingName && (
             <button
+              className="text-blue-600 hover:underline"
               onClick={() => setIsEditingName(true)}
-              className="text-blue-600 hover:underline text-sm"
             >
               Edit
             </button>
@@ -92,79 +84,73 @@ const Identification = () => {
         </div>
 
         {!isEditingName ? (
-          <div className="grid grid-cols-2 gap-4 text-sm text-gray-800">
-            <p><strong>First Name:</strong> {customerResult?.personParty?.firstName || "-"}</p>
-            <p><strong>Last Name:</strong> {customerResult?.personParty?.lastName || "-"}</p>
+          <div className="grid grid-cols-2 gap-4">
+            <p><strong>Mothers Maiden Name:</strong> {customerResult?.personParty?.firstName || "-"}</p>
+            <p><strong>Password:</strong> {customerResult?.personParty?.lastName || "-"}</p>
+            <p><strong>Password Clue:</strong> -</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
             <input
               name="firstName"
               value={nameData.firstName}
               onChange={handleNameChange}
               placeholder="First Name"
-              className="border p-2 rounded w-full"
+              className="border border-gray-300 px-3 py-2 rounded w-full"
             />
             <input
               name="lastName"
               value={nameData.lastName}
               onChange={handleNameChange}
               placeholder="Last Name"
-              className="border p-2 rounded w-full"
+              className="border border-gray-300 px-3 py-2 rounded w-full"
             />
-            <div className="col-span-2 space-x-4">
-              <button
-                onClick={handleNameSave}
-                className="bg-blue-600 text-white px-4 py-1 rounded"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setIsEditingName(false)}
-                className="text-gray-600 hover:underline"
-              >
-                Cancel
-              </button>
+            <div className="flex gap-2 mt-2">
+              <button className="bg-blue-600 text-white px-4 py-1 rounded" onClick={handleNameSave}>Save</button>
+              <button className="text-red-600" onClick={() => setIsEditingName(false)}>Cancel</button>
             </div>
           </div>
         )}
       </div>
 
       {/* Documentary Section */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Documentary</h2>
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold text-lg">Documentary</h3>
+        </div>
         {customerResult?.identification?.length > 0 ? (
           customerResult.identification.map((item) => (
-            <div key={item.identType} className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+            <div key={item.identType} className="border-b border-gray-200 pb-4 mb-4">
               {editId === item.identType ? (
                 <div className="grid grid-cols-2 gap-4">
-                  <input name="identType" value={editData.identType} onChange={handleEditChange} placeholder="ID Type" className="border p-2 rounded" />
-                  <input name="identValue" value={editData.identValue} onChange={handleEditChange} placeholder="ID Value" className="border p-2 rounded" />
-                  <input name="issuedLoc" value={editData.issuedLoc} onChange={handleEditChange} placeholder="Issued Location" className="border p-2 rounded" />
-                  <input name="issueDt" value={editData.issueDt} onChange={handleEditChange} placeholder="Issued Date" className="border p-2 rounded" />
-                  <input name="expDt" value={editData.expDt} onChange={handleEditChange} placeholder="Expiry Date" className="border p-2 rounded" />
-                  <div className="col-span-2 space-x-4">
-                    <button onClick={handleEditSave} className="bg-blue-600 text-white px-4 py-1 rounded">Save</button>
-                    <button onClick={() => setEditId(null)} className="text-gray-600 hover:underline">Cancel</button>
+                  <input name="identType" value={editData.identType} onChange={handleEditChange} className="border px-2 py-1 rounded" />
+                  <input name="identValue" value={editData.identValue} onChange={handleEditChange} className="border px-2 py-1 rounded" />
+                  <input name="issuedLoc" value={editData.issuedLoc} onChange={handleEditChange} className="border px-2 py-1 rounded" />
+                  <input name="issueDt" value={editData.issueDt} onChange={handleEditChange} className="border px-2 py-1 rounded" />
+                  <input name="expDt" value={editData.expDt} onChange={handleEditChange} className="border px-2 py-1 rounded" />
+                  <div className="col-span-2 flex gap-3 mt-2">
+                    <button className="bg-blue-600 text-white px-4 py-1 rounded" onClick={handleEditSave}>Save</button>
+                    <button className="text-red-600" onClick={() => setEditId(null)}>Cancel</button>
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-4 text-sm text-gray-800">
+                <div className="grid grid-cols-2 gap-4">
                   <p><strong>ID Type:</strong> {item.identType}</p>
-                  <p><strong>ID Value:</strong> {item.identValue}</p>
-                  <p><strong>Issued Location:</strong> {item.issuedLoc}</p>
+                  <p><strong>ID Number:</strong> {item.identValue}</p>
                   <p><strong>Issued Date:</strong> {item.issueDt}</p>
-                  <p><strong>Expiry Date:</strong> {item.expDt}</p>
-                  <div className="col-span-2 flex space-x-4">
-                    <button onClick={() => handleEdit(item)} className="text-blue-600 hover:underline">Edit</button>
-                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:underline">Delete</button>
+                  <p><strong>Expiration Date:</strong> {item.expDt}</p>
+                  <p><strong>Issuing Entity:</strong> {item.issuedLoc}</p>
+                  <p><strong>Issuing Location:</strong> {item.issuedLoc}</p>
+                  <div className="col-span-2 flex justify-end gap-4">
+                    <button className="text-blue-600 hover:underline" onClick={() => handleEdit(item)}>Edit</button>
+                    <button className="text-red-600 hover:underline" onClick={() => handleDelete(item.identType)}>Delete</button>
                   </div>
                 </div>
               )}
             </div>
           ))
         ) : (
-          <p className="text-sm text-gray-600">No identification details available.</p>
+          <p>No identification details available.</p>
         )}
       </div>
     </div>
