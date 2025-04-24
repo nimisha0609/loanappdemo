@@ -199,3 +199,20 @@ const Identification = () => {
 };
 
 export default Identification;
+
+const personParty : Partial<PersonParty> = {
+            mothersMaidenName:custDemographics?.CIMothersMdnNme,
+            pswd:custDemographics?.CIPPwd,
+            pswdClue:custDemographics?.CIPPwdQuestion
+          };
+          customer.personParty = personParty;
+
+const personParty: PersonParty = {
+            firstName: custProfile?.CICurFrstNmeKeyFld2,
+            lastName: custProfile?.CICurLstNmeKeyFld1,
+            birthDt: custProfile?.CIBirthdate,
+            gender: '',
+            nationality: '',
+            fullName: custProfile?.CICurStdNme01 ? custProfile?.CICurStdNme01 : ''
+          };
+          customer.personParty = personParty;
