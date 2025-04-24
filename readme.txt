@@ -14,8 +14,9 @@ const Identification = () => {
   const { customerResult, setCustomerResult } = useCustomerContext();
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameData, setNameData] = useState({
-    firstName: customerResult?.personParty?.firstName || "",
-    lastName: customerResult?.personParty?.lastName || "",
+    mothersMaidenName: customerResult?.personParty?.mothersMaidenName || "",
+    pswd: customerResult?.personParty?.pswd || "",
+    pswdClue: customerResult?.personParty?.pswdClue || "",
   });
 
   const [editId, setEditId] = useState<string | null>(null);
@@ -39,7 +40,7 @@ const Identification = () => {
         const response = await fetch('/api/update-name', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ firstName: nameData.firstName, lastName: nameData.lastName })
+          body: JSON.stringify({ mothersMaidenName: nameData.mothersMaidenName, pswd: nameData.pswd, pswdClue: nameData.pswdClue })
         });
         if (!response.ok) throw new Error('Failed to update name');
 
@@ -47,8 +48,9 @@ const Identification = () => {
           ...customerResult,
           personParty: {
             ...customerResult.personParty,
-            firstName: nameData.firstName,
-            lastName: nameData.lastName,
+            mothersMaidenName: nameData.mothersMaidenName, 
+            pswd: nameData.pswd, 
+            pswdClue: nameData.pswdClue
           },
         });
       } catch (error) {
@@ -58,22 +60,21 @@ const Identification = () => {
     setIsEditingName(!isEditingName);
   };
 
-  const buildRequestBody = (data: IdentificationItem) => ({
-    document: {
-      idType: data.identType,
-      idValue: data.identValue,
-      issuedLocation: data.issuedLoc,
-      issuedDate: data.issueDt,
-      expiryDate: data.expDt
-    }
-  });
-
   const updateIdentification = async (id: string, data: any) => {
     try {
-      const res = await fetch('/api/update-identification', {
+      const res = await fetch('http://localhost:4000/customer/ident', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, data })
+        body: JSON.stringify({
+          partyId: customerResult?.partyId,
+          identification: {
+            identType: data.identType,
+            identValue: data.identValue,
+            issueDt: data.issueDt,
+            expDt: data.expDt,
+            issuedLoc: data.issuedLoc
+          }
+        })
       });
       if (!res.ok) throw new Error('Failed to update');
       return await res.json();
@@ -98,13 +99,13 @@ const Identification = () => {
   const handleEditToggle = async (item: IdentificationItem) => {
     if (editId === item.identType) {
       try {
-        await updateIdentification(editId, buildRequestBody(editData));
+        await updateIdentification(editId, editData);
         const updated = customerResult.identification.map((i: IdentificationItem) =>
           i.identType === editId ? { ...i, ...editData } : i
         );
         setCustomerResult({
           ...customerResult,
-          party: { ...customerResult.party, identification: updated },
+          identification: updated
         });
         setEditId(null);
       } catch (err) {
@@ -155,9 +156,9 @@ const Identification = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <p><strong>Mothers Maiden Name:</strong> {isEditingName ? <input name="firstName" value={nameData.firstName} onChange={handleNameChange} className="border px-2 py-1 rounded w-full" /> : customerResult?.personParty?.firstName || "-"}</p>
-          <p><strong>Password:</strong> {isEditingName ? <input name="lastName" value={nameData.lastName} onChange={handleNameChange} className="border px-2 py-1 rounded w-full" /> : customerResult?.personParty?.lastName || "-"}</p>
-          <p><strong>Password Clue:</strong> -</p>
+          <p><strong>Mothers Maiden Name:</strong> {isEditingName ? <input name="mothersMaidenName" value={nameData.mothersMaidenName} onChange={handleNameChange} className="border px-2 py-1 rounded w-full" /> : customerResult?.personParty?.mothersMaidenName || "-"}</p>
+          <p><strong>Password:</strong> {isEditingName ? <input name="pswd" value={nameData.pswd} onChange={handleNameChange} className="border px-2 py-1 rounded w-full" /> : customerResult?.personParty?.pswd || "-"}</p>          
+          <p><strong>Password Clue:</strong> {isEditingName ? <input name="pswdClue" value={nameData.pswdClue} onChange={handleNameChange} className="border px-2 py-1 rounded w-full" /> : customerResult?.personParty?.pswdClue || "-"}</p>
         </div>
       </div>
 
@@ -199,20 +200,3 @@ const Identification = () => {
 };
 
 export default Identification;
-
-const personParty : Partial<PersonParty> = {
-            mothersMaidenName:custDemographics?.CIMothersMdnNme,
-            pswd:custDemographics?.CIPPwd,
-            pswdClue:custDemographics?.CIPPwdQuestion
-          };
-          customer.personParty = personParty;
-
-const personParty: PersonParty = {
-            firstName: custProfile?.CICurFrstNmeKeyFld2,
-            lastName: custProfile?.CICurLstNmeKeyFld1,
-            birthDt: custProfile?.CIBirthdate,
-            gender: '',
-            nationality: '',
-            fullName: custProfile?.CICurStdNme01 ? custProfile?.CICurStdNme01 : ''
-          };
-          customer.personParty = personParty;
