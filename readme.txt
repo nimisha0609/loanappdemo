@@ -33,60 +33,107 @@ const Identification = () => {
     setNameData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleNameEditToggle = () => {
+  const handleNameEditToggle = async () => {
     if (isEditingName) {
-      dummySave("Overview", nameData);
-      setCustomerResult({
-        ...customerResult,
-        personParty: {
-          ...customerResult.personParty,
-          firstName: nameData.firstName,
-          lastName: nameData.lastName,
-        },
-      });
+      try {
+        const response = await fetch('/api/update-name', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ firstName: nameData.firstName, lastName: nameData.lastName })
+        });
+        if (!response.ok) throw new Error('Failed to update name');
+
+        setCustomerResult({
+          ...customerResult,
+          personParty: {
+            ...customerResult.personParty,
+            firstName: nameData.firstName,
+            lastName: nameData.lastName,
+          },
+        });
+      } catch (error) {
+        console.error('Error updating name:', error);
+      }
     }
     setIsEditingName(!isEditingName);
   };
 
-  const handleEditToggle = (item: IdentificationItem) => {
-    if (editId === item.identType) {
-      dummySave("Identification", editData);
-      const updated = customerResult.identification.map((i: IdentificationItem) =>
-        i.identType === editId ? { ...i, ...editData } : i
-      );
-      setCustomerResult({
-        ...customerResult,
-        party: { ...customerResult.party, identification: updated },
+  const buildRequestBody = (data: IdentificationItem) => ({
+    document: {
+      idType: data.identType,
+      idValue: data.identValue,
+      issuedLocation: data.issuedLoc,
+      issuedDate: data.issueDt,
+      expiryDate: data.expDt
+    }
+  });
+
+  const updateIdentification = async (id: string, data: any) => {
+    try {
+      const res = await fetch('/api/update-identification', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, data })
       });
-      setEditId(null);
+      if (!res.ok) throw new Error('Failed to update');
+      return await res.json();
+    } catch (err) {
+      console.error('Update error:', err);
+      throw err;
+    }
+  };
+
+  const deleteIdentification = async (id: string) => {
+    try {
+      const res = await fetch(`/api/delete-identification?id=${id}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Failed to delete');
+    } catch (err) {
+      console.error('Delete error:', err);
+      throw err;
+    }
+  };
+
+  const handleEditToggle = async (item: IdentificationItem) => {
+    if (editId === item.identType) {
+      try {
+        await updateIdentification(editId, buildRequestBody(editData));
+        const updated = customerResult.identification.map((i: IdentificationItem) =>
+          i.identType === editId ? { ...i, ...editData } : i
+        );
+        setCustomerResult({
+          ...customerResult,
+          party: { ...customerResult.party, identification: updated },
+        });
+        setEditId(null);
+      } catch (err) {
+        console.error('Failed to update identification');
+      }
     } else {
       setEditId(item.identType);
       setEditData({ ...item });
     }
   };
 
-  const handleDelete = (id: string) => {
-    dummyDelete(id);
-    const updated = customerResult.identification.filter(
-      (i: IdentificationItem) => i.identType !== id
-    );
-    setCustomerResult({
-      ...customerResult,
-      personParty: { ...customerResult.personParty, identification: updated },
-    });
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteIdentification(id);
+      const updated = customerResult.identification.filter(
+        (i: IdentificationItem) => i.identType !== id
+      );
+      setCustomerResult({
+        ...customerResult,
+        personParty: { ...customerResult.personParty, identification: updated },
+      });
+    } catch (err) {
+      console.error('Failed to delete identification');
+    }
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const dummySave = (section: string, data: any) => {
-    console.log(`Saving ${section}`, data);
-  };
-
-  const dummyDelete = (id: string) => {
-    console.log(`Deleting record with id: ${id}`);
   };
 
   return (
