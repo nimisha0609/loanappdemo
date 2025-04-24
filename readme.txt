@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useCustomerContext } from "@/app/banker/context/CustomerContext";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 interface IdentificationItem {
   identType: string;
@@ -13,6 +15,7 @@ interface IdentificationItem {
 const Identification = () => {
   const { customerResult, setCustomerResult } = useCustomerContext();
   const [isEditingName, setIsEditingName] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [nameData, setNameData] = useState({
     mothersMaidenName: customerResult?.personParty?.mothersMaidenName || "",
     pswd: customerResult?.personParty?.pswd || "",
@@ -37,6 +40,7 @@ const Identification = () => {
   const handleNameEditToggle = async () => {
     if (isEditingName) {
       try {
+        setIsLoading(true);
         const response = await fetch('/api/update-name', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -53,52 +57,48 @@ const Identification = () => {
             pswdClue: nameData.pswdClue
           },
         });
+
+        toast.success("Name updated successfully");
       } catch (error) {
         console.error('Error updating name:', error);
+        toast.error("Failed to update name");
+      } finally {
+        setIsLoading(false);
       }
     }
     setIsEditingName(!isEditingName);
   };
 
   const updateIdentification = async (id: string, data: any) => {
-    try {
-      const res = await fetch('http://localhost:4000/customer/ident', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          partyId: customerResult?.partyId,
-          identification: {
-            identType: data.identType,
-            identValue: data.identValue,
-            issueDt: data.issueDt,
-            expDt: data.expDt,
-            issuedLoc: data.issuedLoc
-          }
-        })
-      });
-      if (!res.ok) throw new Error('Failed to update');
-      return await res.json();
-    } catch (err) {
-      console.error('Update error:', err);
-      throw err;
-    }
+    const res = await fetch('http://localhost:4000/customer/ident', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        partyId: customerResult?.partyId,
+        identification: {
+          identType: data.identType,
+          identValue: data.identValue,
+          issueDt: data.issueDt,
+          expDt: data.expDt,
+          issuedLoc: data.issuedLoc
+        }
+      })
+    });
+    if (!res.ok) throw new Error('Failed to update');
+    return await res.json();
   };
 
   const deleteIdentification = async (id: string) => {
-    try {
-      const res = await fetch(`/api/delete-identification?id=${id}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) throw new Error('Failed to delete');
-    } catch (err) {
-      console.error('Delete error:', err);
-      throw err;
-    }
+    const res = await fetch(`/api/delete-identification?id=${id}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error('Failed to delete');
   };
 
   const handleEditToggle = async (item: IdentificationItem) => {
     if (editId === item.identType) {
       try {
+        setIsLoading(true);
         await updateIdentification(editId, editData);
         const updated = customerResult.identification.map((i: IdentificationItem) =>
           i.identType === editId ? { ...i, ...editData } : i
@@ -107,9 +107,13 @@ const Identification = () => {
           ...customerResult,
           identification: updated
         });
+        toast.success("Identification updated successfully");
         setEditId(null);
       } catch (err) {
         console.error('Failed to update identification');
+        toast.error("Failed to update identification");
+      } finally {
+        setIsLoading(false);
       }
     } else {
       setEditId(item.identType);
@@ -119,6 +123,7 @@ const Identification = () => {
 
   const handleDelete = async (id: string) => {
     try {
+      setIsLoading(true);
       await deleteIdentification(id);
       const updated = customerResult.identification.filter(
         (i: IdentificationItem) => i.identType !== id
@@ -127,8 +132,12 @@ const Identification = () => {
         ...customerResult,
         personParty: { ...customerResult.personParty, identification: updated },
       });
+      toast.success("Identification deleted successfully");
     } catch (err) {
       console.error('Failed to delete identification');
+      toast.error("Failed to delete identification");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -139,6 +148,8 @@ const Identification = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800 text-sm">
+      {isLoading && <p className="text-blue-500 text-sm col-span-2">Processing...</p>}
+
       {/* Overview Section */}
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
